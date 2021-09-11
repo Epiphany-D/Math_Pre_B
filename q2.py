@@ -1,32 +1,33 @@
 import csv
 
-import numpy as np
+
+def fun(dic, k1, k2, item, data1, data2):
+    dic[k1] = (dic[k1] * item + float(data1)) / (item + 1)
+    dic[k2] = (dic[k2] * item + float(data2)) / (item + 1)
+    return dic, item + 1
+
 
 file = 'img_01/data.csv'
-with open(file, 'r', encoding='utf-8') as f:
-    Ae_list, Be_list, Ac4_list, Bc4_list = list(), list(), list(), list()
+with open(file, 'r') as f:
+    A = {'e_mean': 0, 'C4_mean': 0, 'eR_mean': 0, 'C4R_mean': 0}
+    B = {'e_mean': 0, 'C4_mean': 0, 'eR_mean': 0, 'C4R_mean': 0}
+    itemAe, itemBe, itemAC4, itemBC4 = 0, 0, 0, 0
+    # Ae_list, Be_list, Ac4_list, Bc4_list, AeR_list, BeRlist, Ac4R_list, Bc4R_list = list(), list(), list(), list()
     reader = csv.reader(f)
     for line in reader:
         if line[1] == '乙醇转化率':
             if 'A' in line[0]:
-                Ae_list.append(float(line[2]))
+                A, itemAe = fun(A, 'e_mean', 'eR_mean', itemAe, line[2], line[4])
             else:
-                Be_list.append(float(line[2]))
+                B, itemBe = fun(B, 'e_mean', 'eR_mean', itemBe, line[2], line[4])
         else:
             if 'A' in line[0]:
-                Ac4_list.append(float(line[2]))
+                A, itemAC4 = fun(A, 'C4_mean', 'C4R_mean', itemAC4, line[2], line[4])
             else:
-                Bc4_list.append(float(line[2]))
-    print('Ae_max:%.4f' % np.max(Ae_list))
-    print('Be_max:%.4f' % np.max(Be_list))
-    print('Ac4_max:%.4f' % np.max(Ac4_list))
-    print('Bc4_max:%.4f' % np.max(Bc4_list))
-    # print('Ae_mean:%.4f' % (np.mean(Ae_list)))
-    # print('Ae_std:%.4f' % (np.std(Ae_list)))
-    # print('Ac4_mean:%.4f' % (np.mean(Ac4_list)))
-    # print('Ac4_std:%.4f' % (np.std(Ac4_list)))
-    # print('*' * 15)
-    # print('Be_mean:%.4f' % (np.mean(Be_list)))
-    # print('Be_std:%.4f' % (np.std(Be_list)))
-    # print('Bc4_mean:%.4f' % (np.mean(Bc4_list)))
-    # print('Bc4_std:%.4f' % (np.std(Bc4_list)))
+                B, itemBC4 = fun(B, 'C4_mean', 'C4R_mean', itemBC4, line[2], line[4])
+with open('img_01/mean.json', 'w', encoding='utf-8') as f:
+    f.write(str(A))
+    f.write("*" * 20)
+    f.write(str(B))
+    print(A)
+    print(B)
